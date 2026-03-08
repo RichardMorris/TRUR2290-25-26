@@ -9,13 +9,7 @@ error terms \\delta^l_j = \\partial C / \\partial z^l_j = \\partial C /
 
 #### Libraries
 # Standard library
-import json
-import math
 import random
-import shutil
-import sys
-import functools
-sys.path.append("../src/")
 
 # My library
 import mnist_loader
@@ -25,19 +19,27 @@ import network
 # Third-party libraries
 import matplotlib.pyplot as plt
 import numpy as np
-import itertools
 
 def main():
     # Load the data
     full_td, _, testdata = mnist_loader.load_data_wrapper()
     trd = list(full_td) 
     tsd = list(testdata)
-    epochs = 30 # Number of epochs to train for
-    layers = [784, 16, 16, 10]
+
+    layers = [784, 32, 16, 16, 10]
+    epochs = 10 # Number of epochs to train for
+    batch_size = 10
+    eta = 3.0
+
     print("\n{0} hidden layers: {1}".format(len(layers)-2,layers))
     net = network.Network(layers)
+    weights = [int(np.prod(np.shape(x))) for x in net.weights]
+    print("weights",weights," sum ",sum(weights))
+    bias = [len(x) for x in net.biases]
+    print("biases", bias," sum ",sum(bias))
+    print("total parameters ", sum(weights) + sum(bias))
 
-    net.SGD(trd, epochs, 10, 3.0, test_data=tsd)
+    net.SGD(trd, epochs, batch_size, eta, test_data=tsd)
 
     training_set, validation_set, test_set = mnist_loader.load_data()
     images = mnist_disp.get_images(test_set)
@@ -56,21 +58,8 @@ def main():
         if acam == exam:
             correct+=1
         print(exam,acam,['{:4.2f}'.format(x[0]) for x in actual])
-    print(correct,count)
+    print("correct {0}/{1}".format(correct,count+1))
     print(net.evaluate(tsd))
-#    plot_training(
-#        epochs, "norms_during_training_2_layers.json", 2)
-
-
-
-def zip_sum(a, b): 
-    return [x+y for (x, y) in zip(a, b)]
-
-def list_sum(l):
-    return functools.reduce(zip_sum, l)
-
-def list_norm(l):
-    return math.sqrt(sum([x*x for x in l]))
 
 if __name__ == "__main__":
     main()
