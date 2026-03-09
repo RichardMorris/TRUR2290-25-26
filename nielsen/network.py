@@ -81,12 +81,26 @@ class Network(object):
         gradient descent using backpropagation to a single mini batch.
         The ``mini_batch`` is a list of tuples ``(x, y)``, and ``eta``
         is the learning rate."""
+
+        # self.biases is a list [ biases1, biases2, ... biases_n]
+        # where biases1 etc is a vector
+        # self.weights is a list [ weights1, weights2, ... weights_n]
+        # where weights1 etc is a matrix
+        # nabla_b and nabla_w are lists with the same shapes
+        # that store the unscaled changes
         nabla_b = [np.zeros(b.shape) for b in self.biases]
         nabla_w = [np.zeros(w.shape) for w in self.weights]
+        # Each item in the min_batch is the pair (x,y)
+        #  x is the image vector and y the expected output area
         for x, y in mini_batch:
+            # calculate the change in nabla for this pair
             delta_nabla_b, delta_nabla_w = self.backprop(x, y)
+            # add these changes to nabla
+            # nabla_b += delta_nabla_b
             nabla_b = [nb+dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
             nabla_w = [nw+dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
+        # update actual weights with scaled version of nabla
+        # weights -= nabla_w * eta/len
         self.weights = [w-(eta/len(mini_batch))*nw
                         for w, nw in zip(self.weights, nabla_w)]
         self.biases = [b-(eta/len(mini_batch))*nb
@@ -103,15 +117,20 @@ class Network(object):
         activation = x
         activations = [x] # list to store all the activations, layer by layer
         zs = [] # list to store all the z vectors, layer by layer
+        # calculate activations for this image and raw values zs.
         for b, w in zip(self.biases, self.weights):
             z = np.dot(w, activation)+b
             zs.append(z)
             activation = sigmoid(z)
             activations.append(activation)
         # backward pass
-        delta = self.cost_derivative(activations[-1], y) * \
-            sigmoid_prime(zs[-1])
+
+        # last layer cost = (activation-y)^2 where activation = sigmoid(zs)
+        # d cost/dz = d cost/d activation * d activation/dz
+        delta = self.cost_derivative(activations[-1], y) *  sigmoid_prime(zs[-1])
+        # d cost/db = d cost/dz * dz/db = d cost/dz * 1
         nabla_b[-1] = delta
+        # d cost/dw = d cost/dz * dz/dw = d cost/dz * activations[-2]
         nabla_w[-1] = np.dot(delta, activations[-2].transpose())
         # Note that the variable l in the loop below is used a little
         # differently to the notation in Chapter 2 of the book.  Here,
