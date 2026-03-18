@@ -42,6 +42,8 @@ def main():
     print("biases", bias," sum ",sum(bias))
     print("total parameters ", sum(weights) + sum(bias))
 
+    # For a reduceed size of trainingset use 
+    #  net.SGD(trd[0:10000], epochs, batch_size, eta, test_data=tsd)
     net.SGD(trd, epochs, batch_size, eta, test_data=tsd)
 
     training_set, validation_set, test_set = mnist_loader.load_data()
