@@ -10,4 +10,16 @@ The main example there is example1.py which can be run in an interactive windows
 * mnist_loader.py functions to loads the data
 * mnist_disp.py functions to display images of the digits
 * network.py is a class defining a network, allowing it to be trained by stocastic gradient decent.
-* example.py can be modified to change the number of layers, number of epochs and other parameter. 
+* example.py can be modified to change the number of layers, number of epochs and other parameter.
+
+## Running linear regression
+
+You can either clone from github, or use a codelab or in a github codespace. 
+
+It runs in python using the ironpython extension for \jupiter labs.
+
+Things which worked for me:
+* Using a virtual environment
+* Use a bash shell from visual studio to run the code in the first cell under Windows
+* pip install seaborn
+  
